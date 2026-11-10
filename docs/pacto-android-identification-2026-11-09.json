@@ -1,0 +1,12 @@
+{
+  "evidence_type": "user confirmation from nRF Connect on Android",
+  "identification_request": "f0 a0 01 00 91",
+  "reported_reply": "f0 b0 01 d3 74",
+  "result": "The captured identification message works outside iConsole+ on the same phone.",
+  "raw_nrf_log_available": false,
+  "pc_comparison": "Both WSL/BlueZ and native Windows completed writes but recorded no notification replies.",
+  "interpretation": "Investigate the PC-side Bluetooth path or connection setup differences. This does not by itself prove a specific CSR adapter/driver fault.",
+  "next_safe_request": "f0 a2 01 d3 66",
+  "expected_response_prefix": "f0 b2 01 d3",
+  "read_only_a0_a2_phone_sequence_verified": false
+}

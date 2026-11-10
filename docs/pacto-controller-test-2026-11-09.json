@@ -1,0 +1,26 @@
+{
+  "directory": "captures/direct-20261109T174015-xfakBu",
+  "cccd_att_handle": "0x0013",
+  "cccd_value": "0100",
+  "cccd_write_response": "success",
+  "identification_att_handle": "0x0010",
+  "identification_bytes": "f0a0010091",
+  "att_write_opcode": "0x52",
+  "notification_packets": 0,
+  "seconds_from_identification_tx_to_deadline_cleanup": 2.68093,
+  "treadmill_rssi_dbm": {
+    "min": -89,
+    "median": -81,
+    "max": -80
+  },
+  "initial_connection_failed_event": "Connection Failed to be Established (0x3e)",
+  "direct_cccd_response_to_identification_s": 0.004432,
+  "official_app_cccd_response_to_identification_s": 1.007032,
+  "conclusion": "The controller trace confirms the expected ATT write data, target value handle and notification descriptor. No notification response is observed. Radio/connection instability is present. The diagnostic session deadline leaves only 2.7 seconds for the final identification attempt.",
+  "changes": {
+    "notification_setup_delay_s": 1.0,
+    "app_capture_s": 90,
+    "controller_capture_s": 105
+  },
+  "limits": "The evidence does not establish that setup timing or signal strength is the cause. No additional protocol command bytes are enabled."
+}

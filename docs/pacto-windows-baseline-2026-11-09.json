@@ -1,0 +1,20 @@
+{
+  "directory": "captures/windows-20261109T185614-fc3d8432",
+  "platform": "native Windows",
+  "identification_requests": 2,
+  "notification_packets": 0,
+  "identified": false,
+  "result": "The native Windows baseline also receives no identification response. This is not specific to WSL/BlueZ.",
+  "next_diagnostic": "Read only the two observed Device Information fields, then compare the same captured identification bytes with GATT Write Command and Write Request if both are advertised. Stop after this diagnostic session if neither responds.",
+  "added_device_info_reads": {
+    "service": "180A",
+    "firmware": "2A26",
+    "hardware": "2A27"
+  },
+  "recorded_android_values": {
+    "firmware": "05",
+    "hardware": "C0.00.C0.00"
+  },
+  "new_protocol_command_bytes": false,
+  "hardware_validation": "pending"
+}

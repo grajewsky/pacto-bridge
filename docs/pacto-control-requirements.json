@@ -1,0 +1,71 @@
+{
+  "requirements": {
+    "application_controls": [
+      "start",
+      "stop",
+      "speed"
+    ],
+    "physical_controls": "Preserve physical control where confirmed by device behavior",
+    "auto_start_on_connect_or_reconnect": false,
+    "auto_restore_previous_speed_target": false,
+    "connection_precondition": "Operator confirms the belt is stopped before connection; do not send a stop command to satisfy this precondition.",
+    "reconnection_while_running": "Unverified. Do not assume a fresh app session can initialize while the belt is moving."
+  },
+  "evidence": {
+    "android_trace_target_write_handles": {
+      "0x0013": 1,
+      "0x0010": 223
+    },
+    "vendor_frames": {
+      "f0 a0 01 00 91": 1,
+      "f0 a5 01 d3 04 6d": 1,
+      "f0 a2 01 d3 66": 216,
+      "f0 a3 01 d3 01 15 01 02 51 01 51 23": 1,
+      "f0 a4 01 d3 01 01 01 01 01 01 01 01 01 01 01 73": 1,
+      "f0 af 01 d3 02 75": 1,
+      "f0 a5 01 d3 02 6b": 1,
+      "f0 a0 01 d3 64": 1
+    },
+    "console_speed_sequence_confirmed_by_user": [
+      1,
+      3,
+      6,
+      9
+    ],
+    "speed_setting_frames_observed": false,
+    "physical_controls_after_full_official_app_start": "User confirms all physical buttons work.",
+    "physical_controls_after_disconnect_and_restart": "User confirms restored operation.",
+    "official_app_connection_while_running": "User reports iConsole+ cannot connect once a workout has started and speed is already nonzero. This is an operator report, not a packet-level determination of which connection stage fails.",
+    "failed_pc_test_belt_state": "Not recorded. Earlier Windows instructions said the treadmill could remain stopped; they did not require or establish a stopped belt.",
+    "stopped_ui_connection_capture": "captures/android/controls-2026-11-09_20-28-55@bluetooth-26df2b58/pacto-startup.jsonl",
+    "stopped_ui_connection_sequence": [
+      "f0 a0 01 d3 64",
+      "f0 a5 01 d3 04 6d",
+      "f0 a2 01 d3 66"
+    ],
+    "stopped_ui_connection_result": "Original app Connected successfully; 31 B2 frames at zero; no workout/motor controls clicked; later disconnect observed, cause not established.",
+    "full_workout_capture": "captures/android/controls-2026-11-09_20-39-51@bluetooth-f9b8363e/pacto-workout.jsonl",
+    "official_workout_control_prompt": "Observed in UI: Please control your movement through your console.",
+    "full_workout_console_sequence": [
+      0,
+      1,
+      2,
+      0
+    ]
+  },
+  "control_verification": {
+    "start": "Two full traces show unsolicited B5/02 preceding app A5/02 and running B2 telemetry. Exact operator START action not marked; do not implement automatic key forwarding or claim standalone app START.",
+    "stop": "New physical STOP trace shows B5/03, A0/D3, deceleration to zero, BF/03 and disconnect; no moving-belt A5/04 app request. App motor STOP remains unverified.",
+    "speed": "Physical rise from 1 to 2 km/h captured with no speed-setting write. Workout UI directs control through console. App speed-setting payload remains unknown.",
+    "physical_key_events": "An unsolicited B5/02 precedes A5/02 in the capture. Its meaning needs an operator-marked trace, not automatic forwarding based on a guessed interpretation."
+  },
+  "manufacturer_context": {
+    "url": "https://www.zipro.pl/cms/manuals/PACTO.pdf",
+    "pdf_page_one_based": 11,
+    "finding": "The manual describes app takeover of the console after Bluetooth connection. The current hosted revision names FitShow, unlike the captured iConsole variant; it does not verify this firmware byte protocol or which physical keys remain usable."
+  },
+  "live_interlock": "Remains in force while device/session/control behavior is verified.",
+  "implementation_scope": "Application START/STOP/speed plus retained physical controls, with commands verified against this unit and explicit operator action.",
+  "next_capture_plan": "docs/control-capture.md",
+  "bluetooth_packet_collection_helper": "scripts/pull_oppo_bluetooth.ps1"
+}

@@ -1,0 +1,25 @@
+{
+  "source": "User OPPO HCI capture 2026-11-09, protocol bytes only; plateau sequence 1/3/6/9 confirmed by user, zero frame at standby. No device identifiers.",
+  "samples": [
+    {
+      "kmh": 0,
+      "hex": "f0 b2 01 d3 01 01 01 01 01 01 01 01 01 01 01 01 01 02 85"
+    },
+    {
+      "kmh": 1,
+      "hex": "f0 b2 01 d3 03 01 01 01 01 01 01 01 01 0b 01 03 04 03 97"
+    },
+    {
+      "kmh": 3,
+      "hex": "f0 b2 01 d3 13 01 01 01 01 01 01 01 01 1f 01 03 04 03 bb"
+    },
+    {
+      "kmh": 6,
+      "hex": "f0 b2 01 d3 35 01 01 04 01 03 01 01 01 3d 01 03 04 03 00"
+    },
+    {
+      "kmh": 9,
+      "hex": "f0 b2 01 d3 0e 02 01 08 01 06 01 01 01 5b 01 03 04 03 ff"
+    }
+  ]
+}

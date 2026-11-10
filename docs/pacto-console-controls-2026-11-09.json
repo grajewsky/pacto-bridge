@@ -1,0 +1,13 @@
+{
+  "evidence_type": "user report",
+  "symptoms": [
+    "physical START button unresponsive",
+    "physical speed buttons unresponsive"
+  ],
+  "context": "Following the independent nRF Connect BLE identification/status test. User restarted the treadmill; subsequent notification loss may also involve reset session state.",
+  "causality": "Not isolated: connection itself, notification setup, A0 app-session initialization or another factor may be responsible.",
+  "protocol_safety_reassessment": "A captured A0/B0 exchange and valid B2 telemetry do not establish freedom from physical-console side effects.",
+  "software_interlock": "All public live capture modes and direct Treadmill.run are blocked before BLE access. GUI live connect/polling/advertising controls are disabled. Offline replay, decoding and advertisement discovery remain available.",
+  "unsafe_recovery_commands_sent": false,
+  "recovery_request": "Disconnect nRF Connect, close BLE clients and turn phone Bluetooth off. With belt stopped, restart the treadmill if normal physical operation does not return. Confirm operation without any BLE connection before further testing."
+}

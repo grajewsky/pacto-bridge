@@ -1,0 +1,11 @@
+{
+  "evidence_type": "user screenshot from nRF Connect",
+  "request": "f0 a2 01 d3 66",
+  "notification": "f0 b2 01 d3 01 01 01 01 01 01 01 01 01 01 01 01 01 02 85",
+  "checksum_valid": true,
+  "decoded_kmh": 0.0,
+  "notification_descriptor_enabled": true,
+  "connection_bonded": false,
+  "conclusion": "The phone receives B2 telemetry after the known A0 identification and A2 read-only status request outside iConsole+. The minimal read-only protocol works on the phone.",
+  "pc_limitation": "The tested PC path still receives no identification replies; the particular cause remains unresolved."
+}

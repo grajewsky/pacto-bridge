@@ -1,0 +1,17 @@
+{
+  "archive": "bugreport-CPH2841EEA-BP2A.250605.015-2026-11-09-16-41-32.zip",
+  "bluetooth_stack_log": "FS/data/misc/bluetooth/logs/bluetooth_20261109_163632_32342.log",
+  "treadmill_gatt_mapping": {
+    "fff2_write_value_handle": "0x0010",
+    "fff1_notify_value_handle": "0x0012",
+    "cccd_handle": "0x0013"
+  },
+  "gatt_write_events_for_treadmill_connection": 211,
+  "median_write_interval_s": 0.501,
+  "cfa_files_in_archive": 8,
+  "all_cfa_files_header_only": true,
+  "raw_payload_available": false,
+  "raw_capture_path_from_stack_log": "/data/misc/bluetooth/cached_hci/btsnoop_hci_20261109_163631.cfa",
+  "conclusion": "Official app writes repeatedly to the treadmill, followed by notification events. Packet payload bytes are absent from this archive; commands, decoder and units remain unverified.",
+  "next_step": "Attempt an ordinary adb pull of the identified raw capture. Device access permissions are not yet known. No root, bypass or guessed treadmill commands."
+}

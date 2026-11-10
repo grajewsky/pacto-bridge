@@ -1,0 +1,34 @@
+{
+  "directory": "captures/windows-20261109T190540-2ad83a99",
+  "device_info": {
+    "firmware_revision": "05",
+    "hardware_revision": "C0.00.C0.00"
+  },
+  "write_backend_results": [
+    {
+      "response": false,
+      "success": true
+    },
+    {
+      "response": true,
+      "success": true
+    }
+  ],
+  "identification_results": [
+    {
+      "response": false,
+      "identified": false,
+      "error": "TimeoutError: "
+    },
+    {
+      "response": true,
+      "identified": false,
+      "error": "TimeoutError: "
+    }
+  ],
+  "notifications": 0,
+  "status_polls": 0,
+  "conclusion": "Device Information matches the successful Android trace. Both advertised GATT write modes complete successfully at the backend, but neither yields any protocol notification. Direct speed is still unavailable.",
+  "working_android_security_check": "No target-connection SMP or HCI encryption event was found before identification. An encryption command for another connection must not be treated as Pacto pairing evidence.",
+  "next_test": "Use nRF Connect on the same Android phone, with iConsole+ closed, to perform the captured notification enable, revision reads and identification request. Preserve the actual result/log, without sending initialization/control variants."
+}

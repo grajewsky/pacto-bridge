@@ -1,0 +1,18 @@
+{
+  "capture_directory": "captures/direct-20261109T174719-zVejZQ",
+  "identification_requests": 3,
+  "identification_timeouts": 2,
+  "notification_packets": 0,
+  "setup_delay_s": 1,
+  "result": "The full-duration WSL/BlueZ test still received no replies. Two identification attempts waited the complete timeout; the third reached the session deadline.",
+  "observed_adapter": {
+    "product": "CSR8510 A10",
+    "vendor_id": "0a12",
+    "product_id": "0001",
+    "connection": "USB/IP forwarded to WSL",
+    "windows_busid_confirmed_by_user": "1-7"
+  },
+  "available_windows_python": "Python 3.12",
+  "next_test": "scripts/test_windows_ble.ps1 -BusId 1-7: same captured protocol profile using native Windows WinRT, no additional protocol command bytes",
+  "validation": "Windows helper statically reviewed. A PowerShell parser check is added to Windows CI; neither native execution nor CI has run in this WSL sandbox."
+}

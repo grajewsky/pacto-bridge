@@ -6,9 +6,9 @@ standard Running Speed and Cadence (RSC) sensor over Wi-Fi. Zwift on the Windows
 PC discovers it as **PactoBridge WiFi**.
 
 ```text
-ZIPRO Pacto  â”€â”€ Bluetooth LE â”€â”€>  Android / Galaxy S22+
-                                      â”‚
-                                      â””â”€â”€ Wi-Fi / WFTNP â”€â”€> Zwift (Run Speed)
+ZIPRO Pacto  ── Bluetooth LE ──>  Android / Galaxy S22+
+                                      │
+                                      └── Wi-Fi / WFTNP ──> Zwift (Run Speed)
 ```
 
 The one-phone route was validated with a Samsung Galaxy S22+ (SM-S906B, Android
@@ -22,9 +22,9 @@ The one-phone route was validated with a Samsung Galaxy S22+ (SM-S906B, Android
 3. Wake the treadmill console with its physical **STOP** button. Confirm the belt
    is completely stopped, the console reads zero, and iConsole+ is disconnected.
 4. In PactoBridge, scan for and select **iConsole+0106**, check both operator
-   confirmations, then tap **Przygotuj sesjÄ™ Pacto na postoju**. Wait for the live
+   confirmations, then tap **Przygotuj sesję Pacto na postoju**. Wait for the live
    zero-speed reading and the ready state.
-5. In Zwift choose **Run â†’ Speed Source â†’ PactoBridge WiFi** (the network/Wi-Fi
+5. In Zwift choose **Run → Speed Source → PactoBridge WiFi** (the network/Wi-Fi
    sensor icon).
 6. Use the physical treadmill console for **START**, speed changes, and **STOP**.
 
@@ -78,14 +78,13 @@ stopped-belt session. The app publishes only fresh readings from the treadmill.
 
 ## Project layout
 
-- `mobile/` â€” Flutter UI and Android/Kotlin BLE, WFTNP and RSC implementation.
-- `mobile/README.md` â€” detailed phone setup and operation.
-- `mobile/SESSION_WORKFLOW.md` â€” operator session steps and hardware validation.
-- `mobile/NETWORK_PROTOCOL.md` â€” Wi-Fi sensor protocol notes.
-- `scripts/build_android.ps1` â€” Android build and validation script.
-- `pactobridge/` â€” earlier Python protocol research and desktop tooling; not needed
+- `mobile/` — Flutter UI and Android/Kotlin BLE, WFTNP and RSC implementation.
+- `mobile/README.md` — detailed phone setup and operation.
+- `mobile/SESSION_WORKFLOW.md` — operator session steps and hardware validation.
+- `mobile/NETWORK_PROTOCOL.md` — Wi-Fi sensor protocol notes.
+- `scripts/build_android.ps1` — Android build and validation script.
+- `pactobridge/` — earlier Python protocol research and desktop tooling; not needed
   to run the Android bridge.
 
 Local device logs and captures are intentionally excluded from this repository.
 No software license has been selected yet.
-

@@ -1,0 +1,12 @@
+{
+  "capture": "captures/pacto-20261109T150835-801142Z.jsonl",
+  "result": "connected_and_subscribed_no_telemetry",
+  "notify_characteristic": "0000fff1-0000-1000-8000-00805f9b34fb",
+  "listening_s": 76.517,
+  "notifications": 0,
+  "errors": 0,
+  "protocol_write_attempts": 0,
+  "session_complete": true,
+  "interpretation": "Passive BLE subscription succeeded. No telemetry was received. Initialization or polling is possible but unverified; no speed can be decoded.",
+  "next_evidence": "Capture successful official iConsole+ app communication, preserving startup writes and notifications, to identify model-specific initialization without guessing commands."
+}

@@ -1,0 +1,22 @@
+.venv/
+.venv-win/
+__pycache__/
+.pytest_cache/
+*.egg-info/
+build/
+dist/
+captures/
+logs/
+
+# Android/Flutter local build and signing configuration
+**/local.properties
+**/key.properties
+**/*.jks
+**/*.keystore
+
+# Local credentials and machine-specific settings
+.env
+.env.*
+
+# Private session notes may contain user/device-specific details
+/docs/SESSION_HANDOFF.md

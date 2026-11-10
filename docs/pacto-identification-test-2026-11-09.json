@@ -1,0 +1,11 @@
+{
+  "capture": "captures/pacto-20261109T162100-948802Z.jsonl",
+  "identification_requests": 3,
+  "notification_packets": 0,
+  "identification_timeouts": 2,
+  "status_requests": 0,
+  "result": "No replies to the captured A0 identification request. The profile correctly blocked status polling.",
+  "next_step": "Capture direct BlueZ HCI traffic to verify ATT write bytes, actual characteristic handles and CCCD enablement before further protocol changes.",
+  "helper_script": "scripts/capture_direct_ble.sh",
+  "helper_validation": "bash -n passed; physical HCI capture requires user terminal access outside the restricted sandbox."
+}

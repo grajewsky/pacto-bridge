@@ -1,0 +1,26 @@
+{
+  "source_filename": "BT_HCI_2026_1109_165559.cfa",
+  "source_bytes": 1417058,
+  "source_sha256": "bc93d2fc19b7f20ce4b727428829db9fffffb813a2b06d0aa06c3e37cec40878",
+  "treadmill_export": "captures/pacto-iconsole-20261109.jsonl",
+  "vendor_writes": 223,
+  "vendor_notifications": 228,
+  "valid_checksums": 451,
+  "status_polls": 216,
+  "decoded_telemetry_samples": 219,
+  "user_confirmed_console_sequence_kmh": [
+    1,
+    3,
+    6,
+    9
+  ],
+  "most_common_speeds_kmh": {
+    "3.0": 79,
+    "6.0": 45,
+    "1.0": 36,
+    "0.0": 14,
+    "9.0": 7
+  },
+  "direct_status_only_polling_validated": false,
+  "zwift_pairing_validated": false
+}

@@ -1,0 +1,10 @@
+{
+  "capture": "captures/pacto-20261109T161311-854352Z.jsonl",
+  "polling": "pacto-status before identification was implemented",
+  "status_writes": 43,
+  "notifications": 0,
+  "connection_timeouts": 1,
+  "outcome": "Connected and subscribed after retry; 43 A2 requests with no notification. Status-only polling is insufficient in this run.",
+  "change": "Send only the captured A0 identification request and require exact B0 response before polling. No other initialization or control commands enabled.",
+  "hardware_validation_of_updated_identification": "pending"
+}
