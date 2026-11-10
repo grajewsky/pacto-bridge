@@ -4,6 +4,16 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class NetworkSampleGateTest {
+    @Test fun lastReceivedValueRemainsPublishableDuringLongBleSilence() {
+        var now=0L; val gate=NetworkSampleGate { now }; gate.prepare()
+        assertFalse(gate.canPublish())
+        gate.sample(); now=3600000
+        assertFalse(gate.fresh()); assertTrue(gate.canPublish())
+        assertEquals(3600000L,gate.ageMs())
+        gate.sample(); assertEquals(0L,gate.ageMs())
+        gate.reset(); assertFalse(gate.canPublish()); assertNull(gate.ageMs())
+        gate.prepare(); assertFalse(gate.canPublish())
+    }
     @Test fun discoveryWithoutSourceCannotInventZero() {
         var now=0L; val gate=NetworkSampleGate { now }; gate.prepare(); now=3600000
         assertTrue(gate.active); assertTrue(gate.waitingForSource()); assertFalse(gate.fresh())

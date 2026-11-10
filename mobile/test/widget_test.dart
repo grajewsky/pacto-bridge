@@ -21,7 +21,10 @@ void main() {
     expect(calls, ['prepareReceiver']);
     expect(find.text('PactoBridge'), findsOneWidget);
     expect(find.textContaining('START, zmiana prędkości'), findsOneWidget);
-    final button = tester.widget<FilledButton>(find.widgetWithText(FilledButton, 'Przygotuj sesję Pacto na postoju'));
+    final button = tester.widget<FilledButton>(find.ancestor(
+      of: find.text('Przygotuj sesję Pacto na postoju'),
+      matching: find.byWidgetPredicate((widget) => widget is FilledButton),
+    ));
     expect(button.onPressed, isNull);
   });
 }

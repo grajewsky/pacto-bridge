@@ -137,7 +137,6 @@ internal class PactoClient(private val context: Context, private val publisher: 
                 state(value,text)
                 if (value == "STALE" && client === g) {
                     publisher.onTelemetryStale()
-                    emit(mapOf("kind" to "unavailable"))
                 }
                 if (value == "READY" && client === g) {
                     val accepted = g.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_BALANCED)

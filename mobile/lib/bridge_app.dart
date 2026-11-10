@@ -74,6 +74,7 @@ class _BridgePageState extends State<BridgePage> with WidgetsBindingObserver {
   StreamSubscription<dynamic>? subscription;
   Timer? replayTimer;
   double? speed;
+  int sampleAgeMs = 0;
   String state = 'Uruchamiam odbiornik Wi-Fi…';
   bool replay = false, busy = false;
   bool sessionActive = false, stoppedConfirmed = false, operatorPresent = false;
@@ -95,7 +96,9 @@ class _BridgePageState extends State<BridgePage> with WidgetsBindingObserver {
         if (row['kind'] == 'device') devices[row['address'] as String] = row;
         if (row['kind'] == 'speed' && !replay) {
           speed = (row['kmh'] as num).toDouble();
+          sampleAgeMs = 0;
         }
+        if (row['kind'] == 'sample_age') sampleAgeMs = (row['age_ms'] as num).toInt();
         if (row['kind'] == 'unavailable' && !replay) speed = null;
         if (row['kind'] == 'session_state') {
           sessionState = row['state'] as String;
@@ -228,7 +231,7 @@ class _BridgePageState extends State<BridgePage> with WidgetsBindingObserver {
       case 'READY':
         return 'BIEŻNIA GOTOWA';
       case 'STALE':
-        return 'BRAK ŚWIEŻEJ TELEMETRII';
+        return 'OSTATNI POMIAR';
       case 'STOPPING':
         return 'ZATRZYMYWANIE';
       case 'FAILED':
@@ -334,6 +337,9 @@ class _BridgePageState extends State<BridgePage> with WidgetsBindingObserver {
               ],
             ),
             const SizedBox(height: 7),
+            if (speed != null && !replay)
+              Text('Ostatni pomiar: ${sampleAgeMs ~/ 1000} s temu',
+                  style: const TextStyle(color: Colors.white70, fontSize: 12)),
             Text(
               state,
               maxLines: 2,

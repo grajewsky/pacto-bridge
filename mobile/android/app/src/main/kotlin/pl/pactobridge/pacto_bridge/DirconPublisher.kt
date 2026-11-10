@@ -24,6 +24,8 @@ internal class DirconPublisher(context: Context,private val emit: (Map<String,An
     private var socket: ServerSocket?=null
     private var registration: NsdManager.RegistrationListener?=null
     private var latest: ByteArray?=null
+    private var publishing=false
+    private var reportedAgeSeconds=-1L
     @Volatile private var epoch=0
     private val identity: String
     private val protocol: DirconProtocol
@@ -147,26 +149,24 @@ internal class DirconPublisher(context: Context,private val emit: (Map<String,An
         val bytes=try { rscPacket(tenthsKmh) } catch (_: IllegalArgumentException) { stop(); return }
         try { source.sample() } catch (_: IllegalStateException) { stop(); return }
         latest=bytes
-        handler.removeCallbacks(tick); handler.post(tick)
+        if (!publishing) { publishing=true; handler.post(tick) }
     }
-    override fun onTelemetryStale() {
-        handler.removeCallbacks(tick)
-        latest=null
-        source.clearSample()
-    }
+    // A missed BLE read never cancels the independent network sender.
+    override fun onTelemetryStale() {}
     private val tick=object : Runnable {
         override fun run() {
-            if(!source.fresh()) {
-                latest=null
-                source.clearSample()
-                emit(mapOf("kind" to "unavailable"))
-                message("Brak świeżej telemetrii. Wi-Fi czeka na kolejny rzeczywisty pomiar Pacto."); return
-            }
+            if(!source.canPublish()) { publishing=false; return }
             latest?.let { packet->peers.values.filter { it.subscribed }.forEach { it.publish(packet) } }
+            val age=source.ageMs() ?: 0L
+            if(age/1000!=reportedAgeSeconds) {
+                reportedAgeSeconds=age/1000
+                emit(mapOf("kind" to "sample_age", "age_ms" to age))
+            }
             handler.postDelayed(this,250)
         }
     }
     override fun stop() {
+        publishing=false; reportedAgeSeconds=-1
         epoch++; handler.removeCallbacks(tick)
         registration?.let { try { nsd.unregisterService(it) } catch (_: Exception) { } }; registration=null
         try { socket?.close() } catch (_: Exception) { }; socket=null

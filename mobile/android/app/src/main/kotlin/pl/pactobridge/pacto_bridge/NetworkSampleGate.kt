@@ -8,6 +8,8 @@ internal class NetworkSampleGate(private val clock: ()->Long) {
     fun sample() { check(active) { "Network publisher is stopped" }; lastSample=clock() }
     fun clearSample() { lastSample=null }
     fun fresh()=active && lastSample?.let { clock()-it<3000 }==true
+    fun ageMs(): Long? = lastSample?.let { (clock()-it).coerceAtLeast(0) }
+    fun canPublish()=active && lastSample!=null
     fun waitingForSource()=active && lastSample==null
     fun reset() { active=false; lastSample=null }
 }

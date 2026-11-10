@@ -39,7 +39,9 @@ najpierw przygotuj bieżnię w aplikacji, a potem wybierz czujnik w Zwift.
   ani zatrzymania pasa.
 - Podczas przygotowania sesji wysyłane są wyłącznie zapisane komendy inicjalizacji
   potrzebne do rozpoczęcia odczytu. Sesję przygotowuj tylko na postoju, przy zerze.
-- Do Zwift trafiają wyłącznie rzeczywiste, świeże pomiary z bieżni.
+- Zwift otrzymuje co 250 ms ostatnią prędkość odebraną z bieżni. Podczas przerw BLE
+  wartość pozostaje stała; wiek pomiaru jest widoczny w aplikacji. Rozłączenie BLE
+  lub zakończenie sesji kończy nadawanie i usuwa zapamiętany pomiar.
 - Rozłączenie telefonu lub zamknięcie aplikacji nie zatrzymuje silnika. W razie
   potrzeby użyj fizycznego STOP na konsoli.
 - Pozostań przy bieżni podczas jej pracy. Po treningu zatrzymaj ją na konsoli.

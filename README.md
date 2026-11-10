@@ -73,10 +73,11 @@ Bluetooth is enabled, disconnect iConsole+, and scan again from PactoBridge.
 Wi-Fi/LAN, reopen PactoBridge, wait for its Wi-Fi-ready status, then refresh Zwift's
 Run speed sources.
 
-**Telemetry pauses:** PactoBridge clears the displayed speed and waits for another
-real treadmill reading while keeping its Wi-Fi receiver available. If the treadmill
-BLE connection itself ends, wake the console and prepare a fresh stopped-belt
-session. The app never fills gaps with generated speed.
+**Telemetry pauses:** the independent Wi-Fi sender repeats the last received speed
+every 250 ms until a new real reading arrives. The app displays the measurement age.
+During a gap, Zwift can therefore continue showing the previous speed even if the
+belt has changed speed. A real BLE disconnect or session stop ends transmission and
+clears the retained value; a new session must receive a real measurement first.
 
 ## Project layout
 
