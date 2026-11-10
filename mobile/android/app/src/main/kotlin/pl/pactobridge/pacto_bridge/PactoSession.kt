@@ -60,13 +60,15 @@ internal class PactoSession(
     private var endDeadline = 0L
     private var staleReturnState: State? = null
 
-    private fun markTelemetryStale(message: String) {
-        val previous=state
+    private fun retryMissedRead() {
+        val now=clock()
         pending=null; writeComplete=false; replyComplete=false
-        nextWrite=clock()+500
-        if (previous!=State.STALE) {
-            staleReturnState=previous
-            state(State.STALE,message)
+        nextWrite=now+100
+        val age=lastSample?.let { now-it } ?: Long.MAX_VALUE
+        if (state!=State.STALE && age>=3000 &&
+            state in listOf(State.READY,State.START_REQUESTED,State.RUNNING,State.STOPPING)) {
+            staleReturnState=state
+            state(State.STALE,"Brak świeżych pomiarów przez 3 s. BLE pozostaje aktywne; ponawiam wyłącznie odczyt.")
         }
     }
 
@@ -91,7 +93,7 @@ internal class PactoSession(
         if (pending == null) return
         if (!success && pending?.response == null && !pending!!.zero &&
             state in listOf(State.READY,State.START_REQUESTED,State.RUNNING,State.STOPPING,State.STALE)) {
-            markTelemetryStale("Odczyt chwilowo nie odpowiada. Połączenie BLE pozostaje aktywne; czekam na świeży pomiar.")
+            retryMissedRead()
             return
         }
         if (!success) { abort("Android odrzucił zapis BLE. Sesja unieważniona."); return }
@@ -162,7 +164,7 @@ internal class PactoSession(
             val p=pending
             if (p!=null && p.response==null && !p.zero && writeComplete &&
                 state in listOf(State.READY,State.START_REQUESTED,State.RUNNING,State.STOPPING,State.STALE)) {
-                markTelemetryStale("Brak odpowiedzi na odczyt prędkości. BLE pozostaje połączone; czekam na kolejne dane.")
+                retryMissedRead()
             } else {
                 abort("Brak potwierdzenia protokołu. Sesja zamknięta; bez ponawiania komendy."); return
             }
@@ -175,7 +177,8 @@ internal class PactoSession(
             abort("Brak świeżego zera przed przygotowaniem sesji."); return
         }
         pending = cmd; writeComplete = false; replyComplete = false
-        deadline = now+3000; nextWrite = now+500
+        deadline = now+if (cmd.response==null && !cmd.zero) 1000 else 3000
+        nextWrite = now+500
         send(cmd.request.clone())
     }
 }

@@ -140,8 +140,8 @@ internal class PactoClient(private val context: Context, private val publisher: 
                     emit(mapOf("kind" to "unavailable"))
                 }
                 if (value == "READY" && client === g) {
-                    val accepted = g.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER)
-                    report(mapOf("kind" to "transport", "request" to "low_power_connection_priority", "accepted" to accepted))
+                    val accepted = g.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_BALANCED)
+                    report(mapOf("kind" to "transport", "request" to "balanced_connection_priority", "accepted" to accepted))
                 }
             },
             { tenths ->
