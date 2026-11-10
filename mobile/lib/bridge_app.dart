@@ -227,6 +227,8 @@ class _BridgePageState extends State<BridgePage> with WidgetsBindingObserver {
         return 'OCZEKIWANIE NA RUCH';
       case 'READY':
         return 'BIEŻNIA GOTOWA';
+      case 'STALE':
+        return 'BRAK ŚWIEŻEJ TELEMETRII';
       case 'STOPPING':
         return 'ZATRZYMYWANIE';
       case 'FAILED':
@@ -241,6 +243,7 @@ class _BridgePageState extends State<BridgePage> with WidgetsBindingObserver {
     if (sessionState == 'RUNNING' || transportState == 'RECEIVER_READY') {
       return const Color(0xff087f73);
     }
+    if (sessionState == 'STALE') return const Color(0xffb7791f);
     if (sessionState == 'FAILED') return const Color(0xffb5473e);
     return const Color(0xff617975);
   }

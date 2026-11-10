@@ -18,9 +18,11 @@ Pacto write or motor command. Requests are bounded to4096 bytes and four peers.
 Prepare the network server and stopped Pacto session before selecting the running
 sensor in Zwift. Zwift's network client has a10s inactivity timeout; the server
 stays available for reconnection while waiting for genuine source measurements.
-There are no synthetic zero or keepalive speed samples. Once real telemetry
-begins, absence for3s closes the publisher, advertisement and sockets. Background
-also closes BLE/network. Offline replay cannot supply network measurements.
+There are no synthetic zero or keepalive speed samples. If real telemetry pauses,
+the app clears the last speed and pauses RSC notifications while keeping the WiFi
+receiver available for the next real measurement. A temporary missed BLE poll does
+not close the Pacto connection. A real GATT disconnect or app backgrounding still
+ends the live session. Offline replay cannot supply network measurements.
 
 Tests cover framing/fragmentation, bounds, service/profile responses, subscriptions,
 write rejection, original RSC encoding, no invented samples and stale/reset handling.

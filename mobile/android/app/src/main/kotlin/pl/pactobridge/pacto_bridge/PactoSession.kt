@@ -35,7 +35,7 @@ internal class PactoSession(
     private val fail: (String) -> Unit,
     private val ended: () -> Unit
 ) {
-    enum class State { NEW, INITIALIZING, READY, START_REQUESTED, RUNNING, STOPPING, ENDED, FAILED }
+    enum class State { NEW, INITIALIZING, READY, START_REQUESTED, RUNNING, STOPPING, STALE, ENDED, FAILED }
     private data class Command(val request: ByteArray, val response: ByteArray?, val zero: Boolean = false)
     // Fresh-connection form captured in the first full official session and
     // independently confirmed on Android. No silent fallback or retry.
@@ -58,6 +58,17 @@ internal class PactoSession(
     private var lastSpeed: Int? = null
     private var requestDeadline = 0L
     private var endDeadline = 0L
+    private var staleReturnState: State? = null
+
+    private fun markTelemetryStale(message: String) {
+        val previous=state
+        pending=null; writeComplete=false; replyComplete=false
+        nextWrite=clock()+500
+        if (previous!=State.STALE) {
+            staleReturnState=previous
+            state(State.STALE,message)
+        }
+    }
 
     fun begin() {
         check(state == State.NEW)
@@ -78,6 +89,11 @@ internal class PactoSession(
 
     fun writeFinished(success: Boolean) {
         if (pending == null) return
+        if (!success && pending?.response == null && !pending!!.zero &&
+            state in listOf(State.READY,State.START_REQUESTED,State.RUNNING,State.STOPPING,State.STALE)) {
+            markTelemetryStale("Odczyt chwilowo nie odpowiada. Połączenie BLE pozostaje aktywne; czekam na świeży pomiar.")
+            return
+        }
         if (!success) { abort("Android odrzucił zapis BLE. Sesja unieważniona."); return }
         writeComplete = true
         completeIfReady()
@@ -90,6 +106,11 @@ internal class PactoSession(
         if (samples.isNotEmpty()) {
             val value = samples.single()
             lastSample = clock(); lastSpeed = value
+            if (state == State.STALE) {
+                val resume=staleReturnState ?: State.READY
+                staleReturnState=null
+                state(resume,"Odebrano świeży pomiar Pacto. Odczyt i most Wi-Fi wznowione.")
+            }
             if (state == State.INITIALIZING && value != 0) {
                 abort("Wykryto ruch podczas przygotowania. Nie wysłano komendy zatrzymania; użyj fizycznego STOP.")
                 return
@@ -137,10 +158,18 @@ internal class PactoSession(
         if (state == State.START_REQUESTED && now >= requestDeadline) {
             state(State.READY, "Nie zaobserwowano ruchu po sygnale konsoli. Most nadal odczytuje; bez komendy START.")
         }
-        if (pending != null && now >= deadline) { abort("Brak potwierdzenia protokołu. Sesja zamknięta; bez ponawiania komendy."); return }
+        if (pending != null && now >= deadline) {
+            val p=pending
+            if (p!=null && p.response==null && !p.zero && writeComplete &&
+                state in listOf(State.READY,State.START_REQUESTED,State.RUNNING,State.STOPPING,State.STALE)) {
+                markTelemetryStale("Brak odpowiedzi na odczyt prędkości. BLE pozostaje połączone; czekam na kolejne dane.")
+            } else {
+                abort("Brak potwierdzenia protokołu. Sesja zamknięta; bez ponawiania komendy."); return
+            }
+        }
         if (pending != null || now < nextWrite) return
         val cmd = if (commands.isNotEmpty()) commands.removeAt(0) else {
-            if (state in listOf(State.READY, State.START_REQUESTED, State.RUNNING, State.STOPPING)) poll else return
+            if (state in listOf(State.READY, State.START_REQUESTED, State.RUNNING, State.STOPPING, State.STALE)) poll else return
         }
         if (cmd in setup && (lastSpeed != 0 || lastSample?.let { now-it < 3000 } != true)) {
             abort("Brak świeżego zera przed przygotowaniem sesji."); return

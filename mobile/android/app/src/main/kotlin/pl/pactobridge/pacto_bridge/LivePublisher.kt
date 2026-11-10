@@ -5,5 +5,6 @@ internal interface LivePublisher {
     fun requireReceiver()
     fun canWaitForSource(): Boolean
     fun onLiveMeasurement(tenthsKmh: Int)
+    fun onTelemetryStale() {}
     fun stop()
 }

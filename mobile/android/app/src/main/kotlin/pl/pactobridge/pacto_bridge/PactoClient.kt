@@ -135,6 +135,10 @@ internal class PactoClient(private val context: Context, private val publisher: 
         val s=PactoSession({ SystemClock.elapsedRealtime() }, { data -> send(g,data) },
             { value,text ->
                 state(value,text)
+                if (value == "STALE" && client === g) {
+                    publisher.onTelemetryStale()
+                    emit(mapOf("kind" to "unavailable"))
+                }
                 if (value == "READY" && client === g) {
                     val accepted = g.requestConnectionPriority(BluetoothGatt.CONNECTION_PRIORITY_LOW_POWER)
                     report(mapOf("kind" to "transport", "request" to "low_power_connection_priority", "accepted" to accepted))

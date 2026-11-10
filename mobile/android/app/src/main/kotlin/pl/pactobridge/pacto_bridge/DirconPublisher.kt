@@ -149,11 +149,18 @@ internal class DirconPublisher(context: Context,private val emit: (Map<String,An
         latest=bytes
         handler.removeCallbacks(tick); handler.post(tick)
     }
+    override fun onTelemetryStale() {
+        handler.removeCallbacks(tick)
+        latest=null
+        source.clearSample()
+    }
     private val tick=object : Runnable {
         override fun run() {
             if(!source.fresh()) {
-                stop(); emit(mapOf("kind" to "unavailable"))
-                message("Brak świeżej telemetrii: czujnik WiFi zamknięty."); return
+                latest=null
+                source.clearSample()
+                emit(mapOf("kind" to "unavailable"))
+                message("Brak świeżej telemetrii. Wi-Fi czeka na kolejny rzeczywisty pomiar Pacto."); return
             }
             latest?.let { packet->peers.values.filter { it.subscribed }.forEach { it.publish(packet) } }
             handler.postDelayed(this,250)
