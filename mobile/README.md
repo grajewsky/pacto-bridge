@@ -48,6 +48,12 @@ najpierw przygotuj bieżnię w aplikacji, a potem wybierz czujnik w Zwift.
 
 ## Typowe problemy
 
+Po 3 s bez rzeczywistego pomiaru aplikacja próbuje odnowić powiadomienia BLE na
+istniejącym połączeniu. Zwift nadal otrzymuje ostatnią prędkość. Próby są ograniczone
+do trzech, w odstępach co najmniej 5 s. Każdy etap i wynik trafia do dziennika sesji.
+Jeśli danych nadal nie ma, zatrzymaj pas fizycznie i przygotuj nową sesję na postoju.
+Odnowienie subskrypcji nie powtarza inicjalizacji treningu.
+
 **Nie widzę iConsole+0106**
 
 Wybudź panel przyciskiem STOP, sprawdź Bluetooth, rozłącz aplikację iConsole+ i

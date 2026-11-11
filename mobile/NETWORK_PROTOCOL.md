@@ -25,6 +25,14 @@ The app displays measurement age. A real GATT disconnect, session end, explicit 
 or app backgrounding closes the publisher and discards the retained value. A new
 session cannot reuse it. Offline replay cannot supply network measurements.
 
+After 3 seconds without a valid live B2 sample, the source attempts a CCCD
+disable/enable cycle on the existing FFF1 subscription. Polling pauses while the
+descriptor writes are pending; the independent network publisher keeps its value.
+Only three repair attempts are allowed, at least 5 seconds apart. A real B2 sample
+resets the attempt budget. Missing descriptor callbacks halt further GATT operations
+and request an operator-led stopped-belt session. No reconnection or workout setup
+is replayed during recovery. Recovery stages and real-sample resumption are logged.
+
 Tests cover framing/fragmentation, bounds, service/profile responses, subscriptions,
 write rejection, original RSC encoding, no invented samples and stale/reset handling.
 The one-phone WiFi route was hardware-validated end to end on 2026-11-10. A PC

@@ -19,6 +19,11 @@ internal class PactoClient(private val context: Context, private val publisher: 
     private var journal: SessionJournal? = null
     private val frames = PactoWireFrames()
     private var writePending = false
+    private val recovery = NotificationRecovery { SystemClock.elapsedRealtime() }
+    private var recoveryStep=0
+    private var recoverySerial=0
+    private var recoveryBlocked=false
+    private var recoveryExhaustedReported=false
     private var epoch = 0
     private var metadataIndex = -1
     private val metadataIds = listOf(uuid("2a26"),uuid("2a27"))
@@ -83,6 +88,25 @@ internal class PactoClient(private val context: Context, private val publisher: 
         } }
         override fun onDescriptorWrite(g: BluetoothGatt,d: BluetoothGattDescriptor,status: Int) { handler.post {
             if (client !== g) return@post
+            if (session!=null) {
+                if (d.uuid!=uuid("2902") || d.characteristic.uuid!=notify?.uuid) return@post
+                report(mapOf("kind" to "notification_recovery", "step" to recoveryStep, "status" to status))
+                if (recoveryStep==0) return@post
+                if (status!=BluetoothGatt.GATT_SUCCESS) {
+                    finishRecovery(g,false,"Błąd zapisu subskrypcji: $status")
+                } else if (recoveryStep==1) {
+                    recoveryStep=2
+                    try {
+                        if (!g.setCharacteristicNotification(notify,true)) {
+                            finishRecovery(g,false,"Nie włączono lokalnych powiadomień.")
+                        } else {
+                            d.value=BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE
+                            if (!g.writeDescriptor(d)) finishRecovery(g,false,"Android odrzucił włączenie CCCD.")
+                        }
+                    } catch (e: Exception) { finishRecovery(g,false,"Błąd włączenia powiadomień: ${e.message}") }
+                } else finishRecovery(g,true,"Subskrypcja odnowiona. Czekam na rzeczywisty pomiar bieżni.")
+                return@post
+            }
             if (d.uuid!=uuid("2902") || d.characteristic.uuid!=notify?.uuid || status!=BluetoothGatt.GATT_SUCCESS) {
                 abort("Niepotwierdzona subskrypcja FFF1."); return@post
             }
@@ -144,6 +168,10 @@ internal class PactoClient(private val context: Context, private val publisher: 
                 }
             },
             { tenths ->
+                if (recovery.attempts>0) report(mapOf("kind" to "notification_recovery",
+                    "result" to "real_sample_received", "attempts" to recovery.attempts))
+                recovery.sample()
+                recoveryExhaustedReported=false
                 report(mapOf("kind" to "speed","kmh" to tenths/10.0,"source" to "live Pacto B2"))
                 publisher.onLiveMeasurement(tenths)
             }, { text -> abort(text) }, { stop("Fizyczny STOP potwierdzony telemetrią zero. Most rozłączony.") })
@@ -154,9 +182,48 @@ internal class PactoClient(private val context: Context, private val publisher: 
 
     private val tick=object : Runnable {
         override fun run() {
-            session?.tick()
+            val g=client
+            if (g!=null && !recoveryBlocked && recovery.startIfDue(!writePending)) repairNotifications(g)
+            if (!recovery.active && !recoveryBlocked) session?.tick()
+            if (recovery.exhausted() && !recoveryExhaustedReported) {
+                recoveryExhaustedReported=true
+                report(mapOf("kind" to "status", "message" to
+                    "Trzy próby odnowienia BLE nie przywróciły danych. Zwift dostaje ostatni pomiar. Zatrzymaj pas fizycznie i przygotuj nową sesję."))
+            }
             if (session!=null) handler.postDelayed(this,100)
         }
+    }
+
+    private fun repairNotifications(g: BluetoothGatt) {
+        val c=notify
+        val d=c?.getDescriptor(uuid("2902"))
+        recoveryStep=1
+        val serial=++recoverySerial; val token=epoch
+        report(mapOf("kind" to "notification_recovery", "attempt" to recovery.attempts,
+            "message" to "Brak pomiarów BLE. Odnawiam powiadomienia (${recovery.attempts}/3); Zwift otrzymuje ostatnią prędkość."))
+        try {
+            if (c==null || d==null || !g.setCharacteristicNotification(c,false)) {
+                finishRecovery(g,false,"Nie znaleziono subskrypcji FFF1."); return
+            }
+            d.value=BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE
+            if (!g.writeDescriptor(d)) { finishRecovery(g,false,"Android odrzucił wyłączenie CCCD."); return }
+        } catch (e: Exception) {
+            finishRecovery(g,false,"Błąd odnowienia: ${e.message}"); return
+        }
+        handler.postDelayed({
+            if (token==epoch && serial==recoverySerial && recovery.active && client===g) {
+                // Unknown GATT queue state: do not overlap more operations with it.
+                recoveryBlocked=true
+                finishRecovery(g,false,"Brak potwierdzenia odnowienia BLE. Zwift otrzymuje ostatni pomiar. Zatrzymaj pas fizycznie i przygotuj nową sesję.")
+            }
+        },3000)
+    }
+
+    private fun finishRecovery(g: BluetoothGatt, success: Boolean, message: String) {
+        recoveryStep=0; recoverySerial++; recovery.finish()
+        try { notify?.let { g.setCharacteristicNotification(it,true) } } catch (_: Exception) { }
+        report(mapOf("kind" to "notification_recovery", "success" to success,
+            "blocked" to recoveryBlocked, "message" to message))
     }
 
     private fun send(g: BluetoothGatt,data: ByteArray) {
@@ -179,6 +246,7 @@ internal class PactoClient(private val context: Context, private val publisher: 
 
     fun stop(message: String="Most rozłączony. To nie jest komenda STOP bieżni.", preservePublisher: Boolean=false) {
         epoch++
+        recovery.reset(); recoveryStep=0; recoverySerial++; recoveryBlocked=false; recoveryExhaustedReported=false
         handler.removeCallbacks(tick)
         val g=client; client=null; session=null; writePending=false; metadataIndex=-1
         notify=null; write=null; frames.reset()

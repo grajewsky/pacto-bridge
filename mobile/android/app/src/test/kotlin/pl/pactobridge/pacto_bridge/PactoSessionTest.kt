@@ -4,6 +4,16 @@ import org.junit.Assert.*
 import org.junit.Test
 
 class PactoSessionTest {
+    @Test fun transportPauseDuringWorkoutResumesOnlyReadPolls() {
+        val r=Rig(); r.ready(); r.reply(r.zero()); r.advance()
+        r.session.writeFinished(true)
+        val before=r.writes.size
+        r.now+=10000; r.session.tick(); r.now+=100; r.session.tick()
+        assertEquals(listOf("f0 a2 01 d3 66"),r.writes.drop(before))
+        assertTrue(r.errors.isEmpty())
+        r.reply("f0 b2 01 d3 02 01 01 01 01 01 01 01 01 04 01 03 04 03 8f")
+        assertEquals(3,r.values.last())
+    }
     private class Rig {
         var now = 0L
         val writes = ArrayList<String>()
